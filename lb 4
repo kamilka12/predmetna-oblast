@@ -1,0 +1,52 @@
+USE bookstore;
+SELECT COUNT(*) FROM department;  -- 4
+SELECT COUNT(*) FROM employee;    -- 12
+SELECT COUNT(*) FROM customer;    -- 30
+SELECT COUNT(*) FROM product;     -- 30
+SELECT COUNT(*) FROM invoice;     -- 25
+SELECT COUNT(*) FROM orders;      -- 43
+
+USE bookstore;
+
+-- 1. Усі клієнти (всі поля), сортування за прізвищем
+SELECT *
+FROM customer
+ORDER BY last_name;
+
+-- 2. Унікальні видавці за алфавітом
+SELECT DISTINCT publisher
+FROM product
+ORDER BY publisher;
+
+-- 3. Книги видавця 'Folio', сортування за назвою
+SELECT product_name, publisher, category, product_type, price
+FROM product
+WHERE publisher = 'Folio'
+ORDER BY product_name;
+
+-- 4. Клієнтки, народжені 1990-2000 років
+SELECT first_name, last_name, gender, birth_date, phone_number
+FROM customer
+WHERE gender = 'F'
+  AND birth_date BETWEEN '1990-01-01' AND '2000-12-31'
+ORDER BY last_name;
+
+-- 5. Книги жанру 'Фентезі' в наявності у твердій обкладинці
+SELECT *
+FROM product
+WHERE category = 'Фентезі'
+  AND product_type = 'Тверда обкладинка'
+  AND amount > 0;
+
+-- 6. Книги жанру 'Фентезі' або 'Детектив' в наявності,
+--    у твердій обкладинці або у вигляді аудіокниги
+SELECT *
+FROM product
+WHERE category IN ('Фентезі', 'Детектив')
+  AND amount > 0
+  AND (product_type = 'Тверда обкладинка' OR product_type = 'Аудіокнига');
+
+-- 7. Покупки неавторизованих покупців (customer_id NULL)
+SELECT *
+FROM invoice
+WHERE customer_id IS NULL;
