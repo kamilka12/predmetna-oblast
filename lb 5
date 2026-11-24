@@ -1,0 +1,122 @@
+
+   ЗАВДАННЯ 1
+   Усі замовлені товари (книги) + клієнти + момент транзакції.
+   Сортування за Orders ID. Чотири різні методи об'єднання.
+ 
+
+-- 1.1 Equijoin (умови в WHERE)
+SELECT
+    o.orders_id          AS 'Orders ID',
+    p.product_name       AS 'Product name',
+    p.category           AS 'Product category',
+    i.invoice_id         AS 'Invoice ID',
+    i.transaction_moment AS 'Transaction moment',
+    c.last_name          AS 'Customer last name',
+    c.first_name         AS 'Customer first name'
+FROM orders AS o, product AS p, invoice AS i, customer AS c
+WHERE o.product_id  = p.product_id
+  AND o.invoice_id  = i.invoice_id
+  AND i.customer_id = c.customer_id
+ORDER BY o.orders_id;
+
+-- 1.2 INNER JOIN ... ON
+SELECT
+    o.orders_id          AS 'Orders ID',
+    p.product_name       AS 'Product name',
+    p.category           AS 'Product category',
+    i.invoice_id         AS 'Invoice ID',
+    i.transaction_moment AS 'Transaction moment',
+    c.last_name          AS 'Customer last name',
+    c.first_name         AS 'Customer first name'
+FROM orders AS o
+INNER JOIN product  AS p ON o.product_id  = p.product_id
+INNER JOIN invoice  AS i ON o.invoice_id  = i.invoice_id
+INNER JOIN customer AS c ON i.customer_id = c.customer_id
+ORDER BY o.orders_id;
+
+-- 1.3 JOIN ... USING
+SELECT
+    o.orders_id          AS 'Orders ID',
+    p.product_name       AS 'Product name',
+    p.category           AS 'Product category',
+    i.invoice_id         AS 'Invoice ID',
+    i.transaction_moment AS 'Transaction moment',
+    c.last_name          AS 'Customer last name',
+    c.first_name         AS 'Customer first name'
+FROM orders AS o
+JOIN product  AS p USING (product_id)
+JOIN invoice  AS i USING (invoice_id)
+JOIN customer AS c USING (customer_id)
+ORDER BY o.orders_id;
+
+-- 1.4 NATURAL JOIN
+SELECT
+    o.orders_id          AS 'Orders ID',
+    p.product_name       AS 'Product name',
+    p.category           AS 'Product category',
+    i.invoice_id         AS 'Invoice ID',
+    i.transaction_moment AS 'Transaction moment',
+    c.last_name          AS 'Customer last name',
+    c.first_name         AS 'Customer first name'
+FROM orders AS o
+NATURAL JOIN invoice  AS i
+NATURAL JOIN product  AS p
+NATURAL JOIN customer AS c
+ORDER BY o.orders_id;
+
+
+
+   ЗАВДАННЯ 2
+   Співробітники відділу "Чорне море"
+   і всі книги, замовлені з 2024-01-01 по 2024-03-31.
+ 
+
+SELECT
+    o.orders_id          AS 'Orders ID',
+    e.first_name         AS 'Employee first name',
+    e.last_name          AS 'Employee last name',
+    p.product_name       AS 'Product name',
+    p.category           AS 'Product category',
+    i.invoice_id         AS 'Invoice ID',
+    i.transaction_moment AS 'Transaction moment',
+    c.last_name          AS 'Customer last name',
+    c.first_name         AS 'Customer first name'
+FROM orders AS o
+JOIN invoice       AS i ON o.invoice_id    = i.invoice_id
+JOIN employee      AS e ON i.employee_id   = e.employee_id
+JOIN department    AS d ON e.department_id = d.department_id
+JOIN product       AS p ON o.product_id    = p.product_id
+LEFT JOIN customer AS c ON i.customer_id   = c.customer_id
+WHERE d.department_name = 'Чорне море'
+  AND o.order_datetime >= '2024-01-01'
+  AND o.order_datetime <  '2024-04-01'
+ORDER BY o.orders_id;
+
+
+
+   ЗАВДАННЯ 3
+   Усі клієнти + клієнти без замовлень + замовлення без клієнтів
+   (емуляція FULL JOIN). Сортування за Invoice ID.
+ 
+
+SELECT
+    c.customer_id        AS 'Customer ID',
+    c.last_name          AS 'Last Name',
+    c.first_name         AS 'First Name',
+    i.invoice_id         AS 'Invoice ID',
+    i.transaction_moment AS 'Transaction Moment'
+FROM customer AS c
+LEFT JOIN invoice AS i ON c.customer_id = i.customer_id
+
+UNION
+
+SELECT
+    c.customer_id,
+    c.last_name,
+    c.first_name,
+    i.invoice_id,
+    i.transaction_moment
+FROM customer AS c
+RIGHT JOIN invoice AS i ON c.customer_id = i.customer_id
+
+ORDER BY `Invoice ID`;
